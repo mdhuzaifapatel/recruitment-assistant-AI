@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Recruitment Assistant</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#e5e5e5;
+}
+
+/* HEADER */
+
+.header{
+background:#e6004c;
+color:white;
+padding:18px;
+font-size:22px;
+font-weight:bold;
+}
+
+/* LAYOUT */
+
+.container{
+display:flex;
+padding:20px;
+gap:20px;
+}
+
+.left{
+width:320px;
+}
+
+.right{
+flex:1;
+}
+
+/* LEFT CARDS */
+
+.card{
+background:#3a3a3a;
+color:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:8px;
+box-shadow:0px 2px 6px rgba(0,0,0,0.3);
+}
+
+.card h3{
+margin-top:0;
+}
+
+/* BUTTONS */
+
+button{
+background:#e6004c;
+color:white;
+border:none;
+padding:10px 16px;
+margin-top:10px;
+cursor:pointer;
+border-radius:5px;
+font-weight:bold;
+}
+
+button:hover{
+opacity:0.85;
+}
+
+/* OUTPUT PANEL */
+
+.panelTitle{
+font-size:22px;
+margin-bottom:10px;
+}
+
+.output{
+background:#4a4a4a;
+color:white;
+padding:20px;
+border-radius:8px;
+min-height:320px;
+white-space:pre-wrap;
+box-shadow:0px 2px 8px rgba(0,0,0,0.3);
+}
+
+/* FILE INPUT */
+
+input{
+margin-top:6px;
+margin-bottom:8px;
+}
+
+audio{
+margin-bottom:15px;
+width:100%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">Recruitment Assistant</div>
+
+<div class="container">
+
+<!-- LEFT SIDE -->
+
+<div class="left">
+
+<!-- PRE -->
+
+<div class="card">
+<h3 onclick="showPanel('pre')" style="cursor:pointer;">Pre-Evaluation Insights</h3>
+
+Resume<br> <input type="file" id="resume"><br>
+
+JD<br> <input type="file" id="jd"><br>
+
+<button onclick="pre()">Generate</button>
+
+</div>
+
+<!-- DYNAMIC -->
+
+<div class="card">
+<h3 onclick="showPanel('dynamic')" style="cursor:pointer;">Dynamic Insights</h3>
+
+Interview Audio<br> <input type="file" id="audio"><br>
+
+<button onclick="startEval()">Start Evaluation</button> <button onclick="stopEval()">Stop Evaluation</button>
+
+</div>
+
+<!-- FINAL -->
+
+<div class="card">
+<h3 onclick="showPanel('final')" style="cursor:pointer;">Final Insights</h3>
+
+<button onclick="final()">Generate</button>
+
+</div>
+
+</div>
+
+<!-- RIGHT SIDE -->
+
+<div class="right">
+
+<audio id="player" controls></audio>
+
+<div id="panelTitle" class="panelTitle">Insights</div>
+
+<div id="prePanel" class="output" style="display:none"></div>
+<div id="dynamicPanel" class="output" style="display:none"></div>
+<div id="finalPanel" class="output" style="display:none"></div>
+
+</div>
+
+</div>
+
+<script>
+
+/* ---------- PANEL SWITCH ---------- */
+
+function showPanel(type){
+
+prePanel.style.display="none"
+dynamicPanel.style.display="none"
+finalPanel.style.display="none"
+
+if(type==="pre"){
+panelTitle.innerText="Pre-Evaluation Insights"
+prePanel.style.display="block"
+}
+
+if(type==="dynamic"){
+panelTitle.innerText="Dynamic Interview Insights"
+dynamicPanel.style.display="block"
+}
+
+if(type==="final"){
+panelTitle.innerText="Final Candidate Insights"
+finalPanel.style.display="block"
+}
+
+}
+
+
+/* ---------- PRE EVAL ---------- */
+
+async function pre(){
+
+showPanel("pre")
+
+let fd=new FormData()
+fd.append("resume",resume.files[0])
+fd.append("jd",jd.files[0])
+
+prePanel.innerText="Generating insights..."
+
+let r=await fetch("/pre-eval",{method:"POST",body:fd})
+let j=await r.json()
+
+prePanel.innerText=j.insights
+
+}
+
+
+/* ---------- DYNAMIC ---------- */
+
+let transcript=""
+let timer=null
+
+async function startEval(){
+
+showPanel("dynamic")
+
+let file=audio.files[0]
+
+player.src=URL.createObjectURL(file)
+player.play()
+
+let fd=new FormData()
+fd.append("audio",file)
+
+dynamicPanel.innerText="Analyzing interview..."
+
+let r=await fetch("/evaluate-audio",{method:"POST",body:fd})
+let j=await r.json()
+
+transcript=j.transcript
+
+let i=0
+
+timer=setInterval(()=>{
+
+if(i<j.dynamic.length){
+
+dynamicPanel.innerHTML+="\n\n-----------------------------\n\n"
+dynamicPanel.innerHTML+=j.dynamic[i]
+i++
+
+}else{
+
+clearInterval(timer)
+
+}
+
+},6000)
+
+}
+
+function stopEval(){
+
+clearInterval(timer)
+player.pause()
+
+}
+
+
+/* ---------- FINAL ---------- */
+
+async function final(){
+
+showPanel("final")
+
+finalPanel.innerText="Generating final report..."
+
+let r=await fetch("/final-insights?transcript="+encodeURIComponent(transcript),{method:"POST"})
+let j=await r.json()
+
+finalPanel.innerText=j.final
+
+}
+
+</script>
+
+</body>
+</html>

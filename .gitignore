@@ -1,0 +1,7 @@
+.env
+uploads
+app/services/__pycache__/
+app/routes/__pycache__/
+app/__pycache__/
+AI_Engineer_JD.txt
+Muhammad_Huzaifa_Resume_2YOE.pdf

@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+jinja2
+python-multipart
+google-genai
+pdfplumber
+python-docx
+speechrecognition
+pydub
