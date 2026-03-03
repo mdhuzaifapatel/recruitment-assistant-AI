@@ -1,24 +1,32 @@
-import speech_recognition as sr
-from pydub import AudioSegment
-import uuid, os
+# import speech_recognition as sr
+# from pydub import AudioSegment
+# import uuid, os
 
-UPLOAD="uploads"
+# UPLOAD="uploads"
 
-def audio_to_text(path):
+# def audio_to_text(path):
 
-    wav=f"{UPLOAD}/{uuid.uuid4()}.wav"
+#     wav=f"{UPLOAD}/{uuid.uuid4()}.wav"
 
-    AudioSegment.from_file(path).export(wav,format="wav")
+#     AudioSegment.from_file(path).export(wav,format="wav")
 
-    r=sr.Recognizer()
+#     r=sr.Recognizer()
 
-    with sr.AudioFile(wav) as source:
-        audio=r.record(source)
+#     with sr.AudioFile(wav) as source:
+#         audio=r.record(source)
 
-    try:
-        txt=r.recognize_google(audio)
-    except:
-        txt=""
+#     try:
+#         txt=r.recognize_google(audio)
+#     except:
+#         txt=""
 
-    os.remove(wav)
-    return txt
+#     os.remove(wav)
+#     return txt
+
+
+import whisper
+model = whisper.load_model("base")
+
+def transcribe_chunk(path: str) -> str:
+    result = model.transcribe(path)
+    return result["text"]

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File
 import uuid
 
-from app.services.audio_service import audio_to_text
+from app.services.audio_service import transcribe_chunk
 from app.services.gemini_service import ask_gemini
 
 router = APIRouter()
@@ -16,8 +16,8 @@ async def evaluate_audio(audio:UploadFile=File(...)):
     with open(path,"wb") as f:
         f.write(await audio.read())
 
-    transcript=audio_to_text(path)
-
+    transcript=transcribe_chunk(path)
+    print("TRANSCRIPT:", transcript)
     # progressive chunks simulate real-time interview
     chunks=[
         transcript[:len(transcript)//3],
