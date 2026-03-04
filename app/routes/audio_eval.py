@@ -29,31 +29,46 @@ async def evaluate_audio(audio:UploadFile=File(...)):
 
     for c in chunks:
 
-        prompt=f"""
-You are observing an interview that is still ongoing.
+        prompt= f"""
+        You are observing a job interview that is currently in progress.
 
-From the conversation so far, generate recruiter-usable real-time insights.
+        Generate concise recruiter-facing insights from the conversation so far.
 
-REAL-TIME CONVERSATIONAL INSIGHTS
-• Strength signals seen
-• Weakness signals or concerns
+        Use the exact structure below.
 
-DYNAMIC INTERVIEW GUIDANCE
-Suggest 2-3 follow-up questions interviewer should ask next.
+        IMPORTANT RULES
+        • Keep responses SHORT.
+        • Maximum 1 short sentence per bullet.
+        • Do NOT write paragraphs.
+        • Only score if clear evidence exists in the transcript.
+        • If no evidence exists write "No data yet".
+        • Avoid repeating earlier insights.
 
-INSTANT EVALUATION METRICS
+        FORMAT:
 
-Technical Skills → score /10 OR "No data yet"
-Problem Solving → score /10 OR "No data yet"
-Communication → score /10 OR "No data yet"
+        **REAL-TIME CONVERSATIONAL INSIGHTS**
 
-IMPORTANT:
-Only score if evidence exists.
+        **Strength signals seen**
+        • ...
 
-Transcript so far:
-{c}
-"""
+        **Weakness signals or concerns**
+        • ...
 
+        **DYNAMIC INTERVIEW GUIDANCE**
+        Suggest 2-3 follow-up questions the interviewer should ask next.
+
+        • ...
+        • ...
+
+        **INSTANT EVALUATION METRICS**
+
+        Technical Skills → score /10 OR "No data yet"  
+        Problem Solving → score /10 OR "No data yet"  
+        Communication → score /10 OR "No data yet"
+
+        Transcript so far:
+        {c}
+        """
         outputs.append(ask_gemini(prompt))
 
     return {"transcript":transcript,"dynamic":outputs}

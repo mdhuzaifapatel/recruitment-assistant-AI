@@ -3,9 +3,6 @@ import docx
 
 
 def read_txt(path):
-    """
-    Robust text reader supporting UTF-8, UTF-16, ANSI, Windows exports.
-    """
 
     encodings = ["utf-8", "utf-16", "latin-1"]
 

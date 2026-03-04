@@ -8,6 +8,10 @@ def ask_gemini(prompt: str):
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt,
+        # config={
+        #     "temperature":0.3,
+        #     "max_output_tokens":250
+        # }
     )
     
     return response.text

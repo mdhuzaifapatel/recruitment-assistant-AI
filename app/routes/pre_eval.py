@@ -25,38 +25,46 @@ async def pre_eval(resume: UploadFile, jd:UploadFile):
     # print(jd_text)
 
     prompt = f"""
-        You are an AI hiring screening assistant.
+You are an AI hiring screening assistant helping recruiters quickly assess candidate fit.
 
-        Compare the candidate resume with the job description and produce a SHORT recruiter pre-evaluation.
+Compare the candidate resume against the job description and produce a **concise pre-evaluation**.
 
-        IMPORTANT RULES:
-        - Keep output concise
-        - Use bullet points only
-        - Maximum 2-3 bullets per section
-        - Avoid long explanations
+STRICT RULES
+• Use bullet points only.
+• Maximum **2 bullets per section**.
+• **1 short sentence per bullet**.
+• No paragraphs or explanations.
+• Keep language professional and recruiter-focused.
 
-        Return EXACTLY these sections:
+Return the response in **this exact structure**:
 
-        MATCH SCORE (0-100):
-        Give one numeric score representing overall role fit.
+**MATCH SCORE (0-100)**
+Provide ONE numeric score representing overall role fit.
 
-        PROFILE SUMMARY:
-        Very short candidate background snapshot (1-2 lines).
+**PROFILE SUMMARY**
+• Very brief candidate background snapshot.
+• Key domain or years of experience if available.
 
-        KEY MATCHES:
-        Top skills/experience aligned with JD.
+**KEY MATCHES**
+• Top relevant skill or experience aligned with the job.
+• Another strong alignment with the role.
 
-        GAPS / RISKS:
-        Missing skills, unclear experience, or hiring concerns.
+**GAPS / RISKS**
+• Missing or weak skill relative to the JD.
+• Any unclear experience or hiring concern.
 
-        INTERVIEW FOCUS:
-        1 technical thing recruiter should verify
-        1 behavioural thing recruiter should verify
+**INTERVIEW FOCUS**
 
-        Resume:
-        {resume_text}
+Technical verification:
+• One technical capability recruiter should validate.
 
-        Job Description:
-        {jd_text}
-        """
+Behavioural verification:
+• One behavioural or collaboration aspect to probe.
+
+Resume:
+{resume_text}
+
+Job Description:
+{jd_text}
+"""
     return {"insights": ask_gemini(prompt)}
